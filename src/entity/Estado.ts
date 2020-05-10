@@ -8,6 +8,9 @@ export default class Estado implements EstadoType {
   @Field(() => String)
   nome: string;
 
+  @Field(() => String)
+  regiao: string;
+
   @Field(() => [Historico])
   historico: Historico[];
 

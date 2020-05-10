@@ -10,4 +10,3 @@ export default class CovidResolver {
     return data;
   } 
 }
-

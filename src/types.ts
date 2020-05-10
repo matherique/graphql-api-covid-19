@@ -10,6 +10,7 @@ export interface EstadoType {
   nome: string;
   casos: number;
   obitos: number;
+  regiao: string;
   historico: HistoricoType[];
 }
 
@@ -18,12 +19,14 @@ export interface RegiaoType {
   casos: number;
   obitos: number;
   estados: EstadoType[];
+  historico?: HistoricoType[];
 }
 
 export interface CovidType {
   casos: number;
   obitos: number;
   regioes: RegiaoType[];
+  historico?: HistoricoType[];
 }
 
 export interface DataFileType {

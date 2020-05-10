@@ -11,6 +11,7 @@ type Covid {
 
 type Estado {
   nome: String!
+  regiao: String!
   historico: [Historico!]!
   casos: Int!
   obitos: Int!
@@ -30,9 +31,7 @@ type Query {
   estado(nome: String!): Estado!
   estados: [Estado!]!
   covid: Covid!
-
-  """Retorna o historico de casos"""
-  historico(regiao: String, estado: String): [Regiao!]!
+  historicoEstado(data: String!, sigla: String!): Historico
 }
 
 type Regiao {

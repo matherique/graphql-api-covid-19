@@ -20,10 +20,10 @@ async function main() {
 
   const server = new ApolloServer({ schema });
 
-  server.applyMiddleware({ app });
+  server.applyMiddleware({ app, cors: true });
 
   app.listen({ port }, () =>
-    console.log(`🚀 Server ready and listening at ==> http://localhost:${port}${server.graphqlPath}`))
+    console.log(`🚀 Server ready and listening at ===> http://localhost:${port}${server.graphqlPath}`))
 };
 
 main().catch(error => {

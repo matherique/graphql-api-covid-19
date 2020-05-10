@@ -1,7 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { RegiaoType, CovidType, HistoricoType, EstadoType, DataFileType } from '../types';
+import { 
+  RegiaoType,
+  CovidType,
+  HistoricoType,
+  EstadoType 
+} from '../types';
 
 function cleanData(data: string[]): CovidType { 
   const regioes: RegiaoType[] = [];
@@ -12,43 +17,54 @@ function cleanData(data: string[]): CovidType {
 
     if (d[0] === '') return;
 
-    let regiao = regioes.find(r => r.nome === d[0]); 
+    let currentRegiao = regioes.find(r => r.nome === d[0]); 
 
-    if (!regiao) {
-      regioes.push({ nome: d[0], estados: [], casos: 0, obitos: 0 });
-      regiao = regioes[regioes.length - 1];
+    if (!currentRegiao) {
+      regioes.push({ 
+      nome: d[0],
+        estados: [],
+        casos: 0,
+        obitos: 0
+      });
+      currentRegiao = regioes[regioes.length - 1];
     }
     
-    let estado = regiao.estados.find(e => e.nome === d[1]);
+    let currentEstado = currentRegiao.estados.find(e => e.nome === d[1]);
 
-    if (!estado) {
-      regiao.estados.push({ nome: d[1], historico: [], casos: 0, obitos: 0 });
+    if (!currentEstado) {
+      currentRegiao.estados.push({ 
+        nome: d[1],
+        historico: [],
+        casos: 0,
+        obitos: 0,
+        regiao: currentRegiao.nome
+      });
     }
     
-    estado = regiao.estados.find(e => e.nome === d[1]);
+    currentEstado = currentRegiao.estados.find(e => e.nome === d[1]);
 
     let hc: HistoricoType = {
       data: new Date(d[2]).toUTCString(),
-      casosAcumulados:  parseInt(d[3]),
-      casosNovos:  parseInt(d[4]),
+      casosNovos:  parseInt(d[3]),
+      casosAcumulados:  parseInt(d[4]),
       obitosNovos:  parseInt(d[5]),
       obitosAcumulados:  parseInt(d[6]), 
     }
     
-    estado.historico.push(hc);
-    estado.casos = hc.casosNovos;
-    estado.obitos = hc.obitosAcumulados;
+    currentEstado.historico.push(hc);
+      currentEstado.casos = hc.casosAcumulados;
+    currentEstado.obitos = hc.obitosAcumulados;
     
-    regiao.casos = regiao.estados.reduce((p, c) => p + c.casos, 0);
-    regiao.obitos = regiao.estados.reduce((p, c) => p + c.obitos, 0);
+    currentRegiao.casos = currentRegiao.estados.reduce((p, c) => p + c.casos, 0);
+    currentRegiao.obitos = currentRegiao.estados.reduce((p, c) => p + c.obitos, 0);
   });
 
-  const covid: CovidType = { casos: 0, obitos: 0, regioes }
+  const dadosCovid: CovidType = { casos: 0, obitos: 0, regioes }
 
-  covid.casos = regioes.reduce((p, c) => p + c.casos, 0);
-  covid.obitos = regioes.reduce((p, c) => p + c.obitos, 0);
+  dadosCovid.casos = regioes.reduce((p, c) => p + c.casos, 0);
+  dadosCovid.obitos = regioes.reduce((p, c) => p + c.obitos, 0);
   
-  return covid;
+  return dadosCovid;
 }
 
 const file = path.resolve(__dirname, "../data/arquivo_geral.csv");
@@ -64,12 +80,15 @@ const covid = cleanData(content);
 
 //fs.writeFileSync(jsonFile, JSON.stringify(jsonData, null,  4));
 
-function getEstados(data: CovidType): Record<string,EstadoType> {
+function getEstados(dadosCovid: CovidType): Record<string,EstadoType> {
   const estados: Record<string,EstadoType> = {};
-  data.regioes.forEach(r => r.estados.forEach(e => estados[e.nome] = e)); 
+  dadosCovid.regioes.forEach(r => 
+    r.estados.forEach(e => estados[e.nome] = { regiao: r.nome, ...e})
+  ); 
   
   return estados;
 }
 
 export const estados = getEstados(covid);
 export default covid;
+
